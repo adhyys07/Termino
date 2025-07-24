@@ -94,7 +94,7 @@ def send_welcome_email(to_email, username, verification_token):
     sender_email = "adhdhyan.jain@gmail.com"
     sender_password = "iqjzqgnndgfcizqz"
     subject = "Welcome to Termino Casino! Verify your account"
-    verification_link = f"http://termino-production.up.railway.app/verify?token={verification_token}"
+    verification_link = f"https://termino.onrender.com/verify?token={verification_token}"
     body = f"""
 Hi {username},
 
