@@ -27,7 +27,6 @@ def play_wheel_of_fortune(user):
             (10, "Ultra Win!")
         ]
 
-        # Wheel animation
         print()
         for _ in range(10):
             for seg in wheel:
@@ -39,8 +38,7 @@ def play_wheel_of_fortune(user):
         segment = random.choice(wheel)
         print(f"The wheel lands on: {segment[1]}")
 
-        # Always subtract the bet first
-        user['Coins'] = user.get('Coins', user.get('coins', 0))  # Ensure Coins field exists
+        user['Coins'] = user.get('Coins', user.get('coins', 0))
         user['Coins'] -= bet
         if segment[0] == 0:
             print("You lost your bet!")
@@ -64,7 +62,6 @@ def play_wheel_of_fortune(user):
             user['Coins'] += int(bet * 10)
         print(f"Total balance: {user['Coins']}")
 
-        # Ask to play again
         play_again = input("Play again? (y/n): ").strip().lower()
         if play_again != 'y':
             print("Returning to the games dashboard...")

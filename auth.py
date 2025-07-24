@@ -48,7 +48,6 @@ def login_flow(SESSION_FILE):
     user = users.login(uname, pwd)
     if user:
         print(f"🎰 You have {user['coins']} coins.")
-        # Save session info (with username and password for auto-login)
         session_data = json.dumps({
             "username": uname,
             "password": pwd,

@@ -1,5 +1,9 @@
 from games.wof import play_wheel_of_fortune
 from games.plinko import play_plinko
+from games.roulette import play_roulette
+from games.minesweeper import play_minesweeper
+from games.blackjack import play_blackjack
+from games.slots import play_slots
 import os
 def dashboard(session):
     while True:
@@ -13,7 +17,7 @@ def dashboard(session):
         elif dash_choice == "2":
             print("Blackjack coming soon!")
         elif dash_choice == "3":
-            print("Roulette coming soon!")
+            session = play_roulette(session)
         elif dash_choice == "4":
             print("Craps coming soon!")
         elif dash_choice == "5":
@@ -25,9 +29,9 @@ def dashboard(session):
         elif dash_choice == "8":
             print("🚪 Exiting Termino Casino. Thanks for playing!")
             import sys
-            sys.exit(0)  # Exit program completely
+            sys.exit(0) 
         elif dash_choice == "9":
-            # Logout: remove session file if exists
+           
             SESSION_FILE = os.path.join(os.path.expanduser("~"), ".session.json")
             if os.path.exists(SESSION_FILE):
                 try:
@@ -35,7 +39,6 @@ def dashboard(session):
                     print("🔒 Logged out. Session cleared.")
                 except Exception as e:
                     print(f"Error removing session file: {e}")
-            # Restart login/signup loop
             return
         else:
             print("Invalid choice. Please try again.")

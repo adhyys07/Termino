@@ -6,13 +6,12 @@ def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 def draw_plinko_board(path=None, slot_count=7, rows=6):
-    # Center the board for better visual alignment
     board_width = slot_count * 3
     pad = (os.get_terminal_size().columns - board_width) // 2 if hasattr(os, 'get_terminal_size') else 0
     def center_line(line):
         return " " * pad + line
 
-    extra_col = 2  # Add two more dotted columns to the right
+    extra_col = 2
     if path:
         for row in range(len(path)):
             line = ""
@@ -27,7 +26,6 @@ def draw_plinko_board(path=None, slot_count=7, rows=6):
         for row in range(rows + 1):
             print(center_line((" . " * slot_count) + (" . " * extra_col)))
     print(center_line("=" * (board_width + extra_col * 3)))
-    # Show multiplier values instead of slot numbers
     multipliers = [0.5, 1, 2, 5, 2, 1, 0.5]
     print(center_line(" ".join(f"{m:^3}" for m in multipliers) + "   " * extra_col))
 
@@ -78,7 +76,6 @@ def play_plinko(user):
         user['coins'] += win - bet
         print(f"💰 Your new balance: {user['coins']} coins.")
 
-        # Session file is NOT updated by games. Only login updates session.json.
 
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':

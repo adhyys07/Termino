@@ -13,7 +13,6 @@ def verify():
     if not token:
         return "Invalid verification link.", 400
 
-    # Find the user with this token
     params = {"filterByFormula": f"VerificationToken='{token}'"}
     response = requests.get(API_URL, headers=HEADERS, params=params)
     records = response.json().get("records", [])
@@ -21,7 +20,6 @@ def verify():
         return "Invalid or expired verification link.", 404
 
     user_id = records[0]["id"]
-    # Update the Verified field
     data = {"fields": {"Verified": True}}
     update_res = requests.patch(f"{API_URL}/{user_id}", headers=HEADERS, json=data)
     if update_res.status_code == 200:

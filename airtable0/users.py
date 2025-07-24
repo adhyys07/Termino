@@ -10,7 +10,7 @@ def hash_password(password):
 
 def signup(username, password, email):
     verification_token = str(uuid.uuid4())
-    # Check if username exists
+
     response = requests.get(API_URL, headers=HEADERS, params={"filterByFormula": f"Username='{username}'"})
     if response.status_code != 200:
         print("❌ Error checking username:", response.status_code, response.text)
