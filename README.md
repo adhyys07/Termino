@@ -32,7 +32,7 @@ Termino Casino is a terminal-based casino game suite with user authentication, s
 - Blackjack (coming soon)
 - Roulette (coming soon)
 - Craps (coming soon)
-- Minesweeper (coming soon)
+- Minesweeper (fully implemented)
 - Plinko (coming soon)
 
 ## Security
