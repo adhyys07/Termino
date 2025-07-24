@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template_string
+import os
 import requests
 from airtable0.airtable_config import BASE_ID, TABLE_NAME, HEADERS
 
@@ -29,4 +30,4 @@ def verify():
         return "Failed to verify account.", 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=8000)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
