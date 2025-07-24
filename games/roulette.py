@@ -47,7 +47,7 @@ def play_roulette(user):
     print("\n🎰 Welcome to Terminal Roulette!")
     print(f"💰 You have {user['coins']} coins.")
 
-    while True:ro
+    while True:
         print_roulette_table()
         print("\n--- Place Your Bet ---")
         print("Options:")
