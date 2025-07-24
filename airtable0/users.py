@@ -52,7 +52,11 @@ def login(username, password):
 
     record = records[0]
     stored_hash = record["fields"].get("PasswordHash")
+    is_verified = record["fields"].get("Verified", False)
     if hash_password(password) == stored_hash:
+        if not is_verified:
+            print("❌ Account not verified. Please check your email for the verification link.")
+            return None
         email = record["fields"].get("Email", "")
         print(f"✅ Welcome {username}! You have {record['fields'].get('Coins', 0)} coins.")
         return {"id": record["id"], "username": username, "email": email, "coins": record["fields"].get("Coins", 0)}
@@ -67,7 +71,15 @@ def update_coins(user_id, new_coin_value):
             "Coins": new_coin_value
         }
     }
+    print("[DEBUG] update_coins called:")
+    print("  user_id:", user_id)
+    print("  new_coin_value:", new_coin_value)
+    print("  url:", url)
+    print("  headers:", HEADERS)
+    print("  data:", data)
     res = requests.patch(url, headers=HEADERS, json=data)
+    print("  response status:", res.status_code)
+    print("  response text:", res.text)
     if res.status_code != 200:
         print("❌ Error updating coins:", res.status_code, res.text)
     return res.status_code == 200

@@ -19,8 +19,9 @@ def can_bet(user, amount):
     return user['coins'] >= amount and amount > 0
 
 def apply_bet(user, amount, multiplier=0):
+    # Always subtract the bet
+    user['coins'] -= amount
+    # If multiplier > 0, add winnings
     if multiplier > 0:
-        user['coins'] += amount * multiplier
-    else:
-        user['coins'] -= amount
+        user['coins'] += int(amount * multiplier)
     return user
