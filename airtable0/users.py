@@ -1,3 +1,14 @@
+def get_user_balance(username):
+    response = requests.get(API_URL, headers=HEADERS, params={"filterByFormula": f"Username='{username}'"})
+    if response.status_code != 200:
+        print("❌ Error fetching user balance:", response.status_code, response.text)
+        return None
+    records = response.json().get("records", [])
+    if not records:
+        print("Username not found.")
+        return None
+    record = records[0]
+    return record["fields"].get("Coins", 0)
 import requests
 import hashlib
 from airtable0.airtable_config import BASE_ID, TABLE_NAME, HEADERS
