@@ -30,10 +30,10 @@ Termino Casino is a terminal-based casino game suite with user authentication, s
 - Wheel of Fortune (fully implemented)
 - Slots (coming soon)
 - Blackjack (coming soon)
-- Roulette (Partial implementation) - Will be adding multiple bets at a time
+- Roulette (fully implementation) - Will be adding multiple bets at a time
 - Craps (coming soon)
 - Minesweeper (fully implemented)
-- Plinko (coming soon)
+- Plinko (fully implemented)
 
 ## Security
 - Session file is obfuscated using base64 and hidden on Windows
