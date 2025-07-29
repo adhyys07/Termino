@@ -15,5 +15,5 @@ def slot_spin_animation(spin_time=2.5, delay=0.05):
         sys.stdout.flush()
         time.sleep(delay)
 
-    print()  # move to next line
+    print()  
     return reels

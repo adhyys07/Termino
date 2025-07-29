@@ -4,8 +4,6 @@ import os
 import json
 import time
 import smtplib
-import subprocess
-import base64
 from menu import dashboard
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

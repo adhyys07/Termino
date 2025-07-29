@@ -4,6 +4,7 @@ from games.roulette import play_roulette
 from games.minesweeper import play_minesweeper
 from games.blackjack import play_blackjack
 from games.slots import play_slots
+from games.craps import play_craps
 import os
 def dashboard(session):
     while True:
@@ -14,13 +15,13 @@ def dashboard(session):
         print("\n===========================================\n")
         dash_choice = input("Choose an option: ").strip().lower()
         if dash_choice == "1":
-            print("Slots game coming soon!")
+            session, _ = play_slots(session)
         elif dash_choice == "2":
-            print("Blackjack coming soon!")
+            session = play_blackjack(session)
         elif dash_choice == "3":
             session = play_roulette(session)
         elif dash_choice == "4":
-            print("Craps coming soon!")
+            session = play_craps(session)
         elif dash_choice == "5":
             session = play_wheel_of_fortune(session)
         elif dash_choice == "6":
@@ -42,7 +43,6 @@ def dashboard(session):
                     print(f"Error removing session file: {e}")
             return
         elif dash_choice == "10":
-            # Fetch and display balance from Airtable
             try:
                 from airtable0.users import get_user_balance
                 username = session.get('username')

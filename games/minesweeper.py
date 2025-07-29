@@ -102,12 +102,11 @@ def play_minesweeper(user):
                 continue
 
             if (r, c) in revealed:
-                # Only print already revealed if the cell is actually visible as revealed
+                
                 clear()
                 draw_board(board, revealed, mines)
                 print("Already revealed.")
                 continue
-            # Reveal logic: only reveal the selected cell and its connected zeros (if any)
             if (r, c) in mines:
                 revealed.add((r, c))
                 clear()
@@ -115,7 +114,6 @@ def play_minesweeper(user):
                 print(f"\U0001F4A5 You hit a mine! You lost your bet and all profit. Balance: {user['coins']:.2f}")
                 break
             elif board[r][c] == 0:
-                # Reveal all connected zeros and their neighbors
                 stack = [(r, c)]
                 newly_revealed = set()
                 while stack:
@@ -136,15 +134,13 @@ def play_minesweeper(user):
                 profit += per_vault_profit
                 clear()
                 draw_board(board, revealed, mines)
-            # Show the correct balance if quit: coins left + bet + profit
             balance_if_quit = user['coins'] + bet + profit
             print(f"Profit so far: {profit:.2f} coins. Balance if you quit now: {balance_if_quit:.2f}")
-            # Win condition: all non-mine cells revealed
             if len(revealed) == rows * cols - num_mines:
                 win = bet * multiplier
-                total_win = bet + win  # bet returned + multiplier win
+                total_win = bet + win  
                 print(f"\U0001F3C6 You cleared the board! You win {win} coins (plus your bet back, total: {total_win} coins).")
-                user['coins'] += total_win - profit  # Add the rest of the win (since bet already subtracted, profit already added)
+                user['coins'] += total_win - profit 
                 break
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':

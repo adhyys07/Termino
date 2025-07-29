@@ -39,30 +39,27 @@ def play_wheel_of_fortune(user):
         print(f"The wheel lands on: {segment[1]}")
 
         user['Coins'] = user.get('Coins', user.get('coins', 0))
-        user['Coins'] -= bet
         if segment[0] == 0:
             print("You lost your bet!")
+            user['Coins'] -= bet
+            print(f"Total balance: {user['Coins']}")
         elif segment[0] == 0.5:
             print("You get half your bet back.")
-            user['Coins'] += int(bet * 0.5)
+            user['Coins'] -= bet
+            half_back = int(bet * 0.5)
+            user['Coins'] += half_back
+            print(f"You got back {half_back} coins. Total balance: {user['Coins']}")
         elif segment[0] == 1:
             print("You break even.")
-            user['Coins'] += bet
-        elif segment[0] == 2:
-            print("You win double your bet!")
-            user['Coins'] += int(bet * 2)
-        elif segment[0] == 5:
-            print("Jackpot! You win 5x your bet!")
-            user['Coins'] += int(bet * 5)
-        elif segment[0] == 7.5:
-            print("Mega Win! You win 7.5x your bet!")
-            user['Coins'] += int(bet * 7.5)
-        elif segment[0] == 10:
-            print("Ultra Win! You win 10x your bet!")
-            user['Coins'] += int(bet * 10)
-        print(f"Total balance: {user['Coins']}")
+            print(f"Total balance: {user['Coins']}")
+        else:
+            winnings = int(bet * segment[0])
+            print(f"You win {segment[0]}x your bet! You won {winnings} coins!")
+            user['Coins'] += winnings
+            print(f"Total balance: {user['Coins']}")
 
         play_again = input("Play again? (y/n): ").strip().lower()
         if play_again != 'y':
             print("Returning to the games dashboard...")
             break
+    return user

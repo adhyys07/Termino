@@ -23,7 +23,6 @@ def spin_animation(final_number):
             color = get_color(number)
             print(f"{pointer}[{color}] {number}")
         time.sleep(0.1 + i * 0.01)
-    # The winning number is the one pointed by the arrow in the last frame
     return wheel[start + 19 + 9]
 
 def get_color(number):
@@ -134,3 +133,4 @@ def play_roulette(user):
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':
             break
+    return user
