@@ -34,6 +34,7 @@ def get_color(number):
         return "Black"
 
 def play_roulette(user):
+    from airtable0.users import update_coins
     def print_roulette_table():
         print("\n   ┌───────────────────────────────────────────────┐")
         print("   │  0  │  1  2  3 │  4  5  6 │  7  8  9 │ 10 11 12 │")
@@ -56,10 +57,9 @@ def play_roulette(user):
         print("")
         print("  3. Bet on a range of numbers (e.g. 1-12)")
         print("")
-        print("Payouts: color → 8x, number → 20x, range → (32/range_size)x")
+        print("Payouts: color → 5x, number → 5x, range → (32/range_size)x")
         print("")
         bet_type = input("Choose bet type (color/number/range): ").strip().lower()
-        
 
         if bet_type == "color" or bet_type == "1":
             choice = input("Bet on color (red/black/green): ").strip().lower()
@@ -93,6 +93,10 @@ def play_roulette(user):
             bet = int(input("Enter your bet amount (0 to exit): "))
             if bet == 0:
                 print("Exiting roulette...")
+                # Always sync coins before exit
+                user_id = user.get('id')
+                if user_id is not None:
+                    update_coins(user_id, float(user['coins']))
                 break
             if bet < 0 or bet > user['coins']:
                 print("❌ Invalid bet amount.")
@@ -103,24 +107,27 @@ def play_roulette(user):
 
         print("\n🌀 Spinning...")
         user['coins'] -= bet
-        winning_number = spin_animation(bet)
+        user_id = user.get('id')
+        if user_id is not None:
+            update_coins(user_id, float(user['coins']))
+        winning_number = spin_animation(random.choice(ROULETTE_NUMBERS))
         winning_color = get_color(winning_number)
 
         print(f"\n🎯 Ball landed on {winning_number} ({winning_color})")
 
         win = 0
-        if bet_type == "color":
+        if bet_type == "color" or bet_type == "1":
             if (choice == "red" and winning_color == "Red") or \
                (choice == "black" and winning_color == "Black") or \
                (choice == "green" and winning_color == "Green"):
                 win = bet * 8
-        elif bet_type == "number":
+        elif bet_type == "number" or bet_type == "2":
             if winning_number == choice:
-                win = bet * 20
-        elif bet_type == "range":
+                win = bet * 5
+        elif bet_type == "range" or bet_type == "3":
             if winning_number >= start and winning_number <= end:
                 range_size = end - start + 1
-                win = int(bet * (36 / range_size))
+                win = int(bet * (32 / range_size))
 
         if win > 0:
             print(f"🏆 You won {win} coins!")
@@ -128,9 +135,16 @@ def play_roulette(user):
             print("💥 You lost the bet.")
 
         user['coins'] += win
-        print(f"💰 Your balance: {user['coins']} coins")
+        user_id = user.get('id')
+        if user_id is not None:
+            update_coins(user_id, float(user['coins']))
+        print(f"💰 Your balance: {user['coins']:.2f} coins")
 
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':
+            # Always sync coins before exit
+            user_id = user.get('id')
+            if user_id is not None:
+                update_coins(user_id, float(user['coins']))
             break
     return user

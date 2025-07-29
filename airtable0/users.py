@@ -1,3 +1,27 @@
+def log_play(user_id, username, game, bet, profit, result, balance_after, extra=None):
+    """
+    Log a user's play history to the admin log table in Airtable.
+    Fields: UserID, Username, Game, Bet, Profit, Result, BalanceAfter, Timestamp, Extra
+    """
+    import datetime
+    LOG_TABLE = "Logs"  # Change to your actual log table name if different
+    LOG_URL = f"https://api.airtable.com/v0/{BASE_ID}/{LOG_TABLE}"
+    data = {
+        "fields": {
+            "UserID": user_id,
+            "Username": username,
+            "Game": game,
+            "Bet": bet,
+            "Profit": profit,
+            "Result": result,
+            "BalanceAfter": balance_after,
+            "Timestamp": datetime.datetime.utcnow().isoformat(),
+        }
+    }
+    if extra:
+        data["fields"]["Extra"] = str(extra)
+    res = requests.post(LOG_URL, headers=HEADERS, json=data)
+    return res.status_code == 200
 def get_user_balance(username):
     response = requests.get(API_URL, headers=HEADERS, params={"filterByFormula": f"Username='{username}'"})
     if response.status_code != 200:
@@ -82,15 +106,8 @@ def update_coins(user_id, new_coin_value):
             "Coins": new_coin_value
         }
     }
-    print("[DEBUG] update_coins called:")
-    print("  user_id:", user_id)
-    print("  new_coin_value:", new_coin_value)
-    print("  url:", url)
-    print("  headers:", HEADERS)
-    print("  data:", data)
+    # Debug prints removed
     res = requests.patch(url, headers=HEADERS, json=data)
-    print("  response status:", res.status_code)
-    print("  response text:", res.text)
     if res.status_code != 200:
         print("❌ Error updating coins:", res.status_code, res.text)
     return res.status_code == 200

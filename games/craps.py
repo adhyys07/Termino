@@ -50,11 +50,16 @@ def print_dice(dice):
         print('  '.join(line[i] for line in lines))
 
 def play_craps(user):
+    from airtable0.users import update_coins
     while True:
         print("\n--- Craps ---\n")
         coins = user.get('Coins', user.get('coins', 0))
+        user_id = user.get('id')
         if coins <= 0:
             print("You have no coins to bet!")
+            return user
+        if not user_id:
+            print("User ID not found. Cannot update coins in database.")
             return user
 
         while True:
@@ -85,11 +90,13 @@ def play_craps(user):
             print("Natural! You win 2x your bet!")
             coins += bet
             user['Coins'] = coins
+            update_coins(user_id, coins)
             print(f"Your new balance: {coins} coins.")
         elif total in [2, 3, 12]:
             print("Craps! You lose your bet.")
             coins -= bet
             user['Coins'] = coins
+            update_coins(user_id, coins)
             print(f"Your new balance: {coins} coins.")
         else:
             point = total
@@ -114,6 +121,7 @@ def play_craps(user):
                 else:
                     print("Roll again!")
             user['Coins'] = coins
+            update_coins(user_id, coins)
             print(f"Your new balance: {coins} coins.")
 
         again = input("\nDo you want to play again? (y/n): ").strip().lower()

@@ -1,4 +1,5 @@
 def play_blackjack(user):
+    from airtable0.users import update_coins
     import random
     print("--- Blackjack ---\n")
 
@@ -17,8 +18,12 @@ def play_blackjack(user):
             print('  '.join(card[i] for card in lines))
 
     coins = user.get('Coins', user.get('coins', 0))
+    user_id = user.get('id')
     if coins <= 0:
         print("You have no coins to bet!")
+        return user
+    if not user_id:
+        print("User ID not found. Cannot update coins in database.")
         return user
 
     while True:
@@ -71,6 +76,7 @@ def play_blackjack(user):
                 print("Bust! You lose your bet.")
                 coins -= bet
                 user['Coins'] = coins
+                update_coins(user_id, coins)
                 return user
         elif move == 's':
             break
@@ -101,5 +107,6 @@ def play_blackjack(user):
         coins -= bet
 
     user['Coins'] = coins
+    update_coins(user_id, coins)
     print(f"Your new balance: {coins} coins.")
     return user

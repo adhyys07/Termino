@@ -30,6 +30,7 @@ def get_neighbors(r, c, rows, cols):
                 yield nr, nc
 
 def play_minesweeper(user):
+    from airtable0.users import update_coins
     print("\n--- Terminal Minesweeper ---\n")
     rows, cols = 8, 8
     print(f"Board size: {rows}x{cols}")
@@ -76,6 +77,9 @@ def play_minesweeper(user):
 
         revealed = set()  # re-initialize for each round
         user['coins'] -= bet
+        user_id = user.get('id')
+        if user_id:
+            update_coins(user_id, user['coins'])
         profit = 0.0
         clear()
         draw_board(board, revealed, mines)
@@ -86,6 +90,8 @@ def play_minesweeper(user):
             action = input().strip().lower()
             if action == 'q':
                 user['coins'] += bet + profit
+                if user_id:
+                    update_coins(user_id, user['coins'])
                 print(f"You quit and took your profit! {bet + profit:.2f} coins added. Balance: {user['coins']:.2f}")
                 break
             parts = action.split()
@@ -112,6 +118,8 @@ def play_minesweeper(user):
                 clear()
                 draw_board(board, revealed, mines)
                 print(f"\U0001F4A5 You hit a mine! You lost your bet and all profit. Balance: {user['coins']:.2f}")
+                if user_id:
+                    update_coins(user_id, user['coins'])
                 break
             elif board[r][c] == 0:
                 stack = [(r, c)]
@@ -140,7 +148,9 @@ def play_minesweeper(user):
                 win = bet * multiplier
                 total_win = bet + win  
                 print(f"\U0001F3C6 You cleared the board! You win {win} coins (plus your bet back, total: {total_win} coins).")
-                user['coins'] += total_win - profit 
+                user['coins'] += total_win - profit
+                if user_id:
+                    update_coins(user_id, user['coins'])
                 break
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':

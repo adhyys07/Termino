@@ -79,6 +79,7 @@ def play_slots(session):
             print("❌ Could not retrieve balance from database.")
             return session, False
 
+
         bet = input(f"\nBalance: {balance} | Enter bet amount (or Q to quit): ")
         if bet.lower() == 'q':
             print("👋 Thanks for playing!")
@@ -92,6 +93,11 @@ def play_slots(session):
         if bet <= 0 or bet > balance:
             print("❌ Invalid or insufficient balance.")
             continue
+
+        # Deduct bet first
+        balance -= bet
+        update_coins(user_id, balance)
+        session['coins'] = balance
 
         print("\nSpinning...")
         grid = spin_animation_grid()
@@ -112,11 +118,11 @@ def play_slots(session):
                 print(f"\n7️⃣ Lucky 7! You win {winnings} (x2)!")
             else:
                 print(f"\n🎉 You win {winnings} (x{multiplier})!")
+            # Add winnings (bet already subtracted)
             balance += winnings
         else:
             print("\n😢 No luck this time. Only the middle row and special combos pay!")
-            balance -= bet
-
+        # update coins after win/loss
         update_coins(user_id, balance)
         session['coins'] = balance
 

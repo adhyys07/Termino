@@ -12,16 +12,27 @@ def auto_login(SESSION_FILE):
         try:
             with open(SESSION_FILE, "rb") as f:
                 encoded = f.read()
-            session_data = base64.b64decode(encoded)
-            session = json.loads(session_data.decode())
+            if not encoded:
+                print("Auto-login failed: session file is empty.")
+                return False
+            try:
+                session_data = base64.b64decode(encoded)
+                session = json.loads(session_data.decode())
+            except Exception:
+                print("Auto-login failed: session file is corrupted.")
+                return False
             uname = session.get("username")
             pwd = session.get("password")
-            if uname and pwd:
-                user = users.login(uname, pwd)
-                if user:
-                    print(f"🔑 Auto-logged in as {uname}!")
-                    dashboard(user)
-                    return True
+            if not uname or not pwd:
+                print("Auto-login failed: missing credentials in session file.")
+                return False
+            user = users.login(uname, pwd)
+            if user:
+                print(f"🔑 Auto-logged in as {uname}!")
+                dashboard(user)
+                return True
+            else:
+                print("Auto-login failed: invalid credentials.")
         except Exception as e:
             print(f"Auto-login failed: {e}")
     return False
