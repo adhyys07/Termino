@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('utils', 'utils'), ('airtable', 'airtable'), ('core', 'core')],
+    datas=[('.env', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
