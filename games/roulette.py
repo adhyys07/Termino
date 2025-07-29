@@ -34,7 +34,7 @@ def get_color(number):
         return "Black"
 
 def play_roulette(user):
-    from airtable0.users import update_coins
+    from airtable0.users import update_coins, log_play
     def print_roulette_table():
         print("\n   ┌───────────────────────────────────────────────┐")
         print("   │  0  │  1  2  3 │  4  5  6 │  7  8  9 │ 10 11 12 │")
@@ -105,9 +105,13 @@ def play_roulette(user):
             print("❌ Please enter a valid number.")
             continue
 
+        initial_balance = user['coins']
+
+
         print("\n🌀 Spinning...")
         user['coins'] -= bet
         user_id = user.get('id')
+        username = user.get('username', '')
         if user_id is not None:
             update_coins(user_id, float(user['coins']))
         winning_number = spin_animation(random.choice(ROULETTE_NUMBERS))
@@ -116,18 +120,28 @@ def play_roulette(user):
         print(f"\n🎯 Ball landed on {winning_number} ({winning_color})")
 
         win = 0
+        result = None
         if bet_type == "color" or bet_type == "1":
             if (choice == "red" and winning_color == "Red") or \
                (choice == "black" and winning_color == "Black") or \
                (choice == "green" and winning_color == "Green"):
                 win = bet * 8
+                result = f"Color {winning_color}"
+            else:
+                result = f"Color {winning_color}"
         elif bet_type == "number" or bet_type == "2":
             if winning_number == choice:
                 win = bet * 5
+                result = f"Number {winning_number}"
+            else:
+                result = f"Number {winning_number}"
         elif bet_type == "range" or bet_type == "3":
             if winning_number >= start and winning_number <= end:
                 range_size = end - start + 1
                 win = int(bet * (32 / range_size))
+                result = f"Range {start}-{end}"
+            else:
+                result = f"Range {start}-{end}"
 
         if win > 0:
             print(f"🏆 You won {win} coins!")
@@ -139,6 +153,20 @@ def play_roulette(user):
         if user_id is not None:
             update_coins(user_id, float(user['coins']))
         print(f"💰 Your balance: {user['coins']:.2f} coins")
+
+        # Log play
+        if user_id is not None:
+            profit = user['coins'] - initial_balance
+            log_play(
+                user_id=user_id,
+                username=username,
+                game="Roulette",
+                bet=bet,
+                profit=profit,
+                result=result,
+                balance_after=user['coins'],
+                extra=None
+            )
 
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':

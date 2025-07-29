@@ -30,7 +30,7 @@ def draw_plinko_board(path=None, slot_count=7, rows=6):
     print(center_line(" ".join(f"{m:^3}" for m in multipliers) + "   " * extra_col))
 
 def play_plinko(user):
-    from airtable0.users import update_coins
+    from airtable0.users import update_coins, log_play
     print("\n--- Plinko ---\n")
     print("Drop a ball and win coins based on where it lands!")
     print("Board: 7 slots (0-6). Multipliers: [0.5, 1, 2, 5, 2, 1, 0.5]")
@@ -52,6 +52,8 @@ def play_plinko(user):
         except ValueError:
             print("Please enter a valid number.")
             continue
+
+        initial_balance = user['coins']
 
         slot = slot_count // 2
         path = [slot]
@@ -76,10 +78,23 @@ def play_plinko(user):
         print(f"You {'won' if win > 0 else 'lost'} {win} coins.")
         user['coins'] += win - bet
         user_id = user.get('id')
+        username = user.get('username', '')
         if user_id:
             update_coins(user_id, user['coins'])
         print(f"💰 Your new balance: {user['coins']:.2f} coins.")
 
+        if user_id:
+            profit = user['coins'] - initial_balance
+            log_play(
+                user_id=user_id,
+                username=username,
+                game="Plinko",
+                bet=bet,
+                profit=profit,
+                result=f"Slot {final_slot} x{multiplier}",
+                balance_after=user['coins'],
+                extra=None
+            )
 
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':

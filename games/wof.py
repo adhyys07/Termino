@@ -5,6 +5,7 @@ from airtable0 import users
 def play_wheel_of_fortune(user):
     import time, sys
 
+    from airtable0.users import log_play
     while True:
         print("\n--- Wheel of Fortune ---")
         try:
@@ -17,7 +18,6 @@ def play_wheel_of_fortune(user):
             print("Not enough coins or invalid bet amount.")
             continue
 
-        # To make 'Bankrupt' 20% probability, add it multiple times in the wheel
         wheel = [
             (0, "Bankrupt"), (0, "Bankrupt"), (0, "Bankrupt"), (0, "Bankrupt"),
             (0, "Bankrupt"),  # 5 out of 25 = 20%
@@ -45,12 +45,16 @@ def play_wheel_of_fortune(user):
 
         user['Coins'] = user.get('Coins', user.get('coins', 0))
         user_id = user.get('id')
-        # Subtract bet first
+        username = user.get('username', '')
+        initial_balance = user['Coins']
         user['Coins'] -= bet
+        profit = 0  
+        result = segment[1]
         if segment[0] == 0:
             print("You lost your bet!")
             if user_id is not None:
                 users.update_coins(user_id, user['Coins'])
+            profit = -bet
             print(f"Total balance: {user['Coins']}")
         elif segment[0] == 0.5:
             print("You get half your bet back.")
@@ -58,12 +62,14 @@ def play_wheel_of_fortune(user):
             user['Coins'] += half_back
             if user_id is not None:
                 users.update_coins(user_id, user['Coins'])
+            profit = -bet + half_back
             print(f"You got back {half_back} coins. Total balance: {user['Coins']}")
         elif segment[0] == 1:
             print("You break even.")
             user['Coins'] += bet
             if user_id is not None:
                 users.update_coins(user_id, user['Coins'])
+            profit = 0
             print(f"Total balance: {user['Coins']}")
         else:
             winnings = int(bet * segment[0])
@@ -71,7 +77,21 @@ def play_wheel_of_fortune(user):
             user['Coins'] += winnings
             if user_id is not None:
                 users.update_coins(user_id, user['Coins'])
+            profit = winnings
             print(f"Total balance: {user['Coins']}")
+
+        # Log play
+        if user_id is not None:
+            log_play(
+                user_id=user_id,
+                username=username,
+                game="Wheel of Fortune",
+                bet=bet,
+                profit=profit,
+                result=result,
+                balance_after=user['Coins'],
+                extra=None
+            )
 
         play_again = input("Play again? (y/n): ").strip().lower()
         if play_again != 'y':

@@ -66,7 +66,7 @@ def evaluate_grid(grid):
     return False, 0, None
 
 def play_slots(session):
-    from airtable0.users import get_user_balance, update_coins
+    from airtable0.users import get_user_balance, update_coins, log_play
     username = session.get('username')
     user_id = session.get('id')
     if not username or not user_id:
@@ -95,6 +95,7 @@ def play_slots(session):
             continue
 
         # Deduct bet first
+        initial_balance = balance
         balance -= bet
         update_coins(user_id, balance)
         session['coins'] = balance
@@ -103,6 +104,8 @@ def play_slots(session):
         grid = spin_animation_grid()
 
         win, multiplier, symbol = evaluate_grid(grid)
+        result = symbol if win else "No Win"
+        profit = 0
         if win:
             capped_multiplier = min(multiplier, 40)
             winnings = bet * capped_multiplier
@@ -120,11 +123,25 @@ def play_slots(session):
                 print(f"\n🎉 You win {winnings} (x{multiplier})!")
             # Add winnings (bet already subtracted)
             balance += winnings
+            profit = balance - initial_balance
         else:
             print("\n😢 No luck this time. Only the middle row and special combos pay!")
+            profit = balance - initial_balance
         # update coins after win/loss
         update_coins(user_id, balance)
         session['coins'] = balance
+
+        # Log play
+        log_play(
+            user_id=user_id,
+            username=username,
+            game="Slots",
+            bet=bet,
+            profit=profit,
+            result=result,
+            balance_after=balance,
+            extra=None
+        )
 
         again = input("\nDo you want to play again? (y/n): ").strip().lower()
         if again != 'y':

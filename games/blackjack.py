@@ -1,5 +1,5 @@
 def play_blackjack(user):
-    from airtable0.users import update_coins
+    from airtable0.users import update_coins, log_play
     import random
     print("--- Blackjack ---\n")
 
@@ -40,6 +40,8 @@ def play_blackjack(user):
             continue
         break
 
+    initial_balance = coins
+
     def deal_card():
         cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
         return random.choice(cards)
@@ -62,6 +64,7 @@ def play_blackjack(user):
     print_hand([dealer[0], dealer[1]], hide_second=True)
 
     # Player turn
+    bust = False
     while True:
         if hand_value(player) == 21:
             print("Blackjack! Let's see the dealer...")
@@ -77,36 +80,59 @@ def play_blackjack(user):
                 coins -= bet
                 user['Coins'] = coins
                 update_coins(user_id, coins)
-                return user
+                bust = True
+                break
         elif move == 's':
             break
         else:
             print("Invalid input. Type 'h' to hit or 's' to stand.")
 
-    print("Dealer's hand:")
-    print_hand(dealer)
-    print(f"Total: {hand_value(dealer)}")
-    while hand_value(dealer) < 17:
-        dealer.append(deal_card())
-        print("Dealer hits:")
+    if not bust:
+        print("Dealer's hand:")
         print_hand(dealer)
         print(f"Total: {hand_value(dealer)}")
-    dealer_total = hand_value(dealer)
-    player_total = hand_value(player)
+        while hand_value(dealer) < 17:
+            dealer.append(deal_card())
+            print("Dealer hits:")
+            print_hand(dealer)
+            print(f"Total: {hand_value(dealer)}")
+        dealer_total = hand_value(dealer)
+        player_total = hand_value(player)
 
-    if dealer_total > 21:
-        print("Dealer busts! You win 2x your bet!")
-        coins += bet
-    elif player_total > dealer_total:
-        print("You win! You win 2x your bet!")
-        coins += bet
-    elif player_total == dealer_total:
-        print("Push! Your bet is returned.")
+        if dealer_total > 21:
+            print("Dealer busts! You win 2x your bet!")
+            coins += bet
+            result_str = "Dealer busts"
+        elif player_total > dealer_total:
+            print("You win! You win 2x your bet!")
+            coins += bet
+            result_str = "Player wins"
+        elif player_total == dealer_total:
+            print("Push! Your bet is returned.")
+            result_str = "Push"
+        else:
+            print("Dealer wins. You lose your bet.")
+            coins -= bet
+            result_str = "Dealer wins"
+
+        user['Coins'] = coins
+        update_coins(user_id, coins)
     else:
-        print("Dealer wins. You lose your bet.")
-        coins -= bet
+        result_str = "Player busts"
 
-    user['Coins'] = coins
-    update_coins(user_id, coins)
     print(f"Your new balance: {coins} coins.")
+
+    # Log play
+    if user_id:
+        profit = coins - initial_balance
+        log_play(
+            user_id=user_id,
+            username=user.get('username', ''),
+            game="Blackjack",
+            bet=bet,
+            profit=profit,
+            result=result_str,
+            balance_after=coins,
+            extra=None
+        )
     return user

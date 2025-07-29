@@ -30,7 +30,7 @@ def get_neighbors(r, c, rows, cols):
                 yield nr, nc
 
 def play_minesweeper(user):
-    from airtable0.users import update_coins
+    from airtable0.users import update_coins, log_play
     print("\n--- Terminal Minesweeper ---\n")
     rows, cols = 8, 8
     print(f"Board size: {rows}x{cols}")
@@ -57,15 +57,19 @@ def play_minesweeper(user):
             print("Please enter a valid number.")
             continue
 
-        # Per-vault profit: higher for more mines, lower for fewer mines
-        max_multiplier = 32
-        base_multiplier = 2 + num_mines // 2
-        multiplier = min(max_multiplier, base_multiplier)
-        per_vault_profit = bet * (multiplier / ((rows * cols) - num_mines))
+        initial_balance = user['coins']
+
+
+        total_cells = rows * cols
+        safe_cells = total_cells - num_mines
+        if num_mines > 0:
+            multiplier = round((total_cells - 1) / num_mines, 2)
+        else:
+            multiplier = 1
+        per_vault_profit = bet * (multiplier / safe_cells)
         print(f"Multiplier for clearing all: {multiplier}x")
         print(f"Profit per safe vault: {per_vault_profit:.2f} coins (Multiplier: {multiplier}x)")
 
-        # Setup board and variables for this round
         board = [[0 for _ in range(cols)] for _ in range(rows)]
         mines = set()
         while len(mines) < num_mines:
@@ -75,7 +79,7 @@ def play_minesweeper(user):
             for nr, nc in get_neighbors(r, c, rows, cols):
                 board[nr][nc] += 1
 
-        revealed = set()  # re-initialize for each round
+        revealed = set() 
         user['coins'] -= bet
         user_id = user.get('id')
         if user_id:
@@ -152,6 +156,19 @@ def play_minesweeper(user):
                 if user_id:
                     update_coins(user_id, user['coins'])
                 break
+        # Log play
+        if user_id:
+            profit = user['coins'] - initial_balance
+            log_play(
+                user_id=user_id,
+                username=user.get('username', ''),
+                game="Minesweeper",
+                bet=bet,
+                profit=profit,
+                result=f"Profit: {profit}",
+                balance_after=user['coins'],
+                extra=None
+            )
         again = input("\nPress Enter to play again or type 'q' to quit: ")
         if again.lower() == 'q':
             break

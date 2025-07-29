@@ -1,26 +1,23 @@
 def log_play(user_id, username, game, bet, profit, result, balance_after, extra=None):
-    """
-    Log a user's play history to the admin log table in Airtable.
-    Fields: UserID, Username, Game, Bet, Profit, Result, BalanceAfter, Timestamp, Extra
-    """
     import datetime
-    LOG_TABLE = "Logs"  # Change to your actual log table name if different
+    LOG_TABLE = "Logs"
     LOG_URL = f"https://api.airtable.com/v0/{BASE_ID}/{LOG_TABLE}"
     data = {
         "fields": {
-            "UserID": user_id,
-            "Username": username,
-            "Game": game,
+            "Username": str(username),
+            "Game": str(game),
             "Bet": bet,
-            "Profit": profit,
-            "Result": result,
-            "BalanceAfter": balance_after,
+            "Profit": str(profit),
+            "Result": str(result),
+            "BalanceAfter": str(balance_after),
             "Timestamp": datetime.datetime.utcnow().isoformat(),
         }
     }
     if extra:
         data["fields"]["Extra"] = str(extra)
     res = requests.post(LOG_URL, headers=HEADERS, json=data)
+    if res.status_code != 200:
+        print(f"[log_play DEBUG] Airtable response: {res.status_code} {res.text}")
     return res.status_code == 200
 def get_user_balance(username):
     response = requests.get(API_URL, headers=HEADERS, params={"filterByFormula": f"Username='{username}'"})
