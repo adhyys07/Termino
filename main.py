@@ -7,6 +7,8 @@ import smtplib
 from menu import dashboard
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
+load_dotenv()
 
 def main():
     print_termino_logo()
@@ -18,7 +20,7 @@ def send_welcome_email(to_email, username, verification_token):
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
     sender_email = "adhdhyan.jain@gmail.com"
-    sender_password = "iqjzqgnndgfcizqz"
+    sender_password = os.getenv("SMTP_PASSWORD")
     subject = "Welcome to Termino Casino! Verify your account"
     verification_link = f"https://termino.onrender.com/verify?token={verification_token}"
     body = f"""
