@@ -1,7 +1,7 @@
 
-# Termino Casino
+# Termino
 
-Termino Casino is a terminal-based casino game suite with user authentication, session management, and a variety of classic games. Play, bet, and win coins in a secure, modular Python application backed by Airtable.
+Termino is a terminal-based casino game suite with user authentication, session management, and a variety of classic games. Play, bet, and win coins in a secure, modular Python application backed by Airtable.
 
 ---
 
